@@ -3,18 +3,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Нужно, чтобы приложение могло открыть браузер (Android 11+) -->
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="http" />
-        </intent>
-    </queries>
-
     <application
         android:allowBackup="true"
         android:label="Красная кнопка"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".MainActivity"

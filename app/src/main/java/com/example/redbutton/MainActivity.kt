@@ -1,11 +1,11 @@
 package com.example.redbutton
 
 import android.app.Activity
-import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -18,6 +18,7 @@ import kotlin.concurrent.thread
 class MainActivity : Activity() {
 
     private var server: ServerSocket? = null
+    private var webView: WebView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +42,9 @@ class MainActivity : Activity() {
     }
 
     private fun startServerAndOpenGoogle() {
+        // Запускаем локальный сервер на 127.0.0.1:8300, если он ещё не запущен
         if (server == null) {
             try {
-                // Слушаем только на этом устройстве (127.0.0.1), порт 8300
                 val s = ServerSocket(PORT, 50, InetAddress.getByName("127.0.0.1"))
                 server = s
                 thread(isDaemon = true) { serve(s) }
@@ -53,9 +54,15 @@ class MainActivity : Activity() {
             }
         }
 
-        // Открываем адрес сервера в браузере; сервер отвечает редиректом на Google
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://localhost:$PORT"))
-        startActivity(intent)
+        // Открываем localhost:8300 внутри приложения; сервер отвечает редиректом на Google
+        val view = WebView(this).apply {
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            webViewClient = WebViewClient()
+        }
+        webView = view
+        setContentView(view)
+        view.loadUrl("http://localhost:$PORT")
     }
 
     // Простой HTTP-сервер: на любой GET-запрос отвечает редиректом на Google
@@ -82,6 +89,16 @@ class MainActivity : Activity() {
             } catch (e: Exception) {
                 // Игнорируем ошибки отдельных соединений
             }
+        }
+    }
+
+    // Кнопка «Назад» сначала возвращает на предыдущую страницу в WebView
+    override fun onBackPressed() {
+        val view = webView
+        if (view != null && view.canGoBack()) {
+            view.goBack()
+        } else {
+            super.onBackPressed()
         }
     }
 
