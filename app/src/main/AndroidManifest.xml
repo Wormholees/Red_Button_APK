@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -18,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Каждое окно в своём процессе: отдельные cookie и вход -->
+        <!-- Окна: каждое в своём процессе, поэтому cookie и вход разделены -->
         <activity
             android:name=".Tab1Activity"
             android:process=":tab1"
@@ -33,6 +37,25 @@
             android:name=".Tab3Activity"
             android:process=":tab3"
             android:exported="false" />
+
+        <!-- Фоновый сервис с серверами -->
+        <service
+            android:name=".ServerService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Локальные HTTP-серверы для окон WebView" />
+        </service>
+
+        <!-- Автозапуск сервиса после перезагрузки -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
