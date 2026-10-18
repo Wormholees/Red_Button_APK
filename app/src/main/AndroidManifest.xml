@@ -18,6 +18,22 @@
             </intent-filter>
         </activity>
 
+        <!-- Каждое окно в своём процессе: отдельные cookie и вход -->
+        <activity
+            android:name=".Tab1Activity"
+            android:process=":tab1"
+            android:exported="false" />
+
+        <activity
+            android:name=".Tab2Activity"
+            android:process=":tab2"
+            android:exported="false" />
+
+        <activity
+            android:name=".Tab3Activity"
+            android:process=":tab3"
+            android:exported="false" />
+
     </application>
 
 </manifest>
